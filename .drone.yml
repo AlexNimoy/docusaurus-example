@@ -1,0 +1,33 @@
+kind: pipeline
+name: deploy 
+
+steps:
+  - name: build
+    image: node:lts
+    commands:
+      - cd website 
+      - yarn install
+      - yarn build
+
+  - name: deploy with ansible
+    image: plugins/ansible:1
+    settings:
+      playbook: ansible/deploy.yml
+      inventory: ansible/hosts
+      vault_password:
+        from_secret: ansible_vault_password
+      private_key:
+        from_secret: ansible_private_key
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: send telegram notification
+    image: appleboy/drone-telegram
+    settings:
+      token:
+        from_secret: TELEGRAM_TOKEN
+      to: 223696541 
+

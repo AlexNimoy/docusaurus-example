@@ -1,0 +1,7 @@
+- hosts: all 
+  tasks:
+    - name: Upload files 
+      copy:
+        src: ../website/build/test-site/
+        dest: ~/public_html
+
